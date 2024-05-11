@@ -4,14 +4,15 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [NotificationEntity::class], version = 1)
+@Database(entities = [NotificationEntity::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun notificationDao(): NotificationDao
 
     //Singleton instance of the DB
     companion object {
-
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
@@ -25,12 +26,20 @@ abstract class AppDatabase : RoomDatabase() {
                         AppDatabase::class.java,
                         Constants.dbName
                     )
-                        .fallbackToDestructiveMigration()
+                        .addMigrations(MIGRATION_1_2)
                         .build()
                     INSTANCE = instance
                 }
                 return instance
             }
+        }
+
+        /**
+        * MIGRATION 1 -> 2
+        * "id" [NotificationEntity] is now annotated with "autoGenerate = false" and set to notification_id
+        * */
+        private val MIGRATION_1_2: Migration = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {/*no change needed*/}
         }
     }
 }
