@@ -94,7 +94,7 @@ fun SearchBar(hint: String, onSearchQueryChanged: (String) -> Unit) {
     }
 
 @Composable
-fun NotificationItem(notification: NotificationEntity) {
+fun NotificationItem(notification: Notification) {
     Card(modifier = Modifier
         .fillMaxWidth()
         .padding(8.dp),

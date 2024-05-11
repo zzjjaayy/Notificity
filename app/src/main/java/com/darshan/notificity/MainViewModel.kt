@@ -21,7 +21,7 @@ class MainViewModel(private val application: Application, repository: Notificati
 
     private val packageManager = application.packageManager
 
-    val notifications: LiveData<List<NotificationEntity>> = repository.getAllNotifications()
+    val notifications: LiveData<List<Notification>> = repository.getAllNotifications()
     // Live data to observe apps with their notification counts
     val appsInfo: LiveData<List<AppInfo>> = notifications.map { notifications ->
         notifications.groupBy { it.packageName }.map { entry ->
@@ -34,7 +34,7 @@ class MainViewModel(private val application: Application, repository: Notificati
         }
     }
 
-    val notificationsGroupedByApp: LiveData<Map<String, List<NotificationEntity>>> = notifications.map { notificationList ->
+    val notificationsGroupedByApp: LiveData<Map<String, List<Notification>>> = notifications.map { notificationList ->
         notificationList.groupBy { it.appName }
     }
 
