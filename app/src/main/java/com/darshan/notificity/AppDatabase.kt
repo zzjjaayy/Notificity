@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [NotificationEntity::class], version = 2)
+@Database(entities = [Notification::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun notificationDao(): NotificationDao
 
@@ -36,10 +36,29 @@ abstract class AppDatabase : RoomDatabase() {
 
         /**
         * MIGRATION 1 -> 2
-        * "id" [NotificationEntity] is now annotated with "autoGenerate = false" and set to notification_id
+        * Change in PrimaryKey for [Notification]
+         * The primary key is now composed of [Notification.id] && [Notification.packageName]
+         * The [Notification.id] is now set to the notificationId which was originally sent to the NotificationManager
         * */
         private val MIGRATION_1_2: Migration = object : Migration(1, 2) {
-            override fun migrate(database: SupportSQLiteDatabase) {/*no change needed*/}
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("CREATE TABLE IF NOT EXISTS `notification_new` " +
+                        "(`id` INTEGER NOT NULL, " +
+                        "`packageName` TEXT NOT NULL, " +
+                        "`timestamp` INTEGER NOT NULL, " +
+                        "`appName` TEXT NOT NULL, " +
+                        "`title` TEXT NOT NULL, " +
+                        "`content` TEXT NOT NULL, " +
+                        "`imageUrl` TEXT, " +
+                        "`extras` TEXT, " +
+                        "PRIMARY KEY(`id`, `packageName`))")
+
+                database.execSQL("INSERT INTO `notification_new` (id, packageName, timestamp, appName, title, content, imageUrl, extras) " +
+                        "SELECT id, packageName, timestamp, appName, title, content, imageUrl, extras FROM NotificationEntity")
+
+                database.execSQL("DROP TABLE NotificationEntity")
+                database.execSQL("ALTER TABLE `notification_new` RENAME TO notification")
+            }
         }
     }
 }

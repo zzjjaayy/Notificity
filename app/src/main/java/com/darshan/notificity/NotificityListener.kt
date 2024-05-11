@@ -43,7 +43,7 @@ class NotificityListener : NotificationListenerService() {
             (if (ai != null) pm.getApplicationLabel(ai) else "(unknown)") as String
 
         // Create a new notification entity
-        val notificationEntity = NotificationEntity(
+        val newNotification = Notification(
             id = sbn.id,
             packageName = packageName,
             timestamp = timestamp,
@@ -54,10 +54,10 @@ class NotificityListener : NotificationListenerService() {
             extras = extras.toString()
         )
 
-        if(notificationEntity.content.isNotEmpty() && notificationEntity.title.isNotEmpty()){
+        if(newNotification.content.isNotEmpty() && newNotification.title.isNotEmpty()){
             // Insert the notification into the database using coroutines
             CoroutineScope(Dispatchers.IO).launch {
-                repository.insertNotification(notificationEntity)
+                repository.insertNotification(newNotification)
             }
         }
     }

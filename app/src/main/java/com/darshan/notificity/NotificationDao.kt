@@ -9,8 +9,8 @@ import androidx.room.Query
 @Dao
 interface NotificationDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertNotification(notification: NotificationEntity)
+    suspend fun insertNotification(notification: Notification)
 
-    @Query("SELECT * FROM notificationentity ORDER BY timestamp DESC")
-    fun getAllNotifications(): LiveData<List<NotificationEntity>>
+    @Query("SELECT * FROM notification ORDER BY timestamp DESC")
+    fun getAllNotifications(): LiveData<List<Notification>>
 }
